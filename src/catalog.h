@@ -16,109 +16,111 @@ using namespace std;
 
 namespace badgerdb {
 
-/**
- * Table Id
- */
-typedef std::uint32_t TableId;
-
-/**
- * System catalog
- */
-class Catalog {
- private:
   /**
-   * Database name
+   * Table Id
    */
-  string dbName;
+  typedef std::uint32_t TableId;
 
   /**
-   * Mapping table name to table Id
+   * System catalog
    */
-  map<string, TableId> tableIds;
+  class Catalog {
+    private:
+      /**
+       * Database name
+       */
+      string dbName;
 
-  /**
-   * Mapping table Id to table schema
-   */
-  map<TableId, TableSchema> tableSchemas;
+      /**
+       * Mapping table name to table Id
+       */
+      map<string, TableId> tableIds;
 
-  /**
-   * Mapping table id to table filename
-   */
-  map<TableId, string> tableFilenames;
+      /**
+       * Mapping table Id to table schema
+       */
+      map<TableId, TableSchema> tableSchemas;
 
-  /**
-   * Next available table Id
-   */
-  TableId nextTableId;
+      /**
+       * Mapping table id to table filename
+       */
+      map<TableId, string> tableFilenames;
 
- public:
-  /**
-   * Constructor
-   */
-  Catalog(const string& dbName) : dbName(std::move(dbName)), nextTableId(0) {
-    // nothing
-  }
+      /**
+       * Next available table Id
+       */
+      TableId nextTableId; // a temporary variable - used to set tables' ids
 
-  /**
-   * Destructor
-   */
-  ~Catalog() {
-    // nothing
-  }
+    public:
+      /**
+       * Constructor
+       */
+      Catalog(const string &dbName) :
+          dbName(std::move(dbName)), nextTableId(0) {
+        // nothing
+      }
 
-  /**
-   * Get database name
-   */
-  const string& getDatabaseName() const { return dbName; }
+      /**
+       * Destructor
+       */
+      ~Catalog() {
+        // nothing
+      }
 
-  /**
-   * Get table Id
-   */
-  const TableId& getTableId(const string& tableName) const {
-    return tableIds.at(tableName);
-  }
+      /**
+       * Get database name
+       */
+      const string& getDatabaseName() const {
+        return dbName;
+      }
 
-  /**
-   * Get table schema
-   */
-  const TableSchema& getTableSchema(const TableId& id) const {
-    return tableSchemas.at(id);
-  }
+      /**
+       * Get table Id
+       */
+      const TableId& getTableId(const string &tableName) const {
+        return tableIds.at(tableName);
+      }
 
-  /**
-   * Get table file
-   */
-  const string& getTableFilename(const TableId& id) const {
-    return tableFilenames.at(id);
-  }
+      /**
+       * Get table schema
+       */
+      const TableSchema& getTableSchema(const TableId &id) const {
+        return tableSchemas.at(id);
+      }
 
-  /**
-   * CREATE TABLE
-   */
-  TableId addTableSchema(const TableSchema& tableSchema,
-                         const string& tableFilename) {
-    tableIds.insert(
-        pair<string, TableId>(tableSchema.getTableName(), nextTableId));
-    tableSchemas.insert(pair<TableId, TableSchema>(nextTableId, tableSchema));
-    tableFilenames.insert(pair<TableId, string>(nextTableId, tableFilename));
-    return nextTableId++;
-  }
+      /**
+       * Get table file
+       */
+      const string& getTableFilename(const TableId &id) const {
+        return tableFilenames.at(id);
+      }
 
-  /**
-   * DROP TABLE
-   */
-  void deleteTableSchema(const TableId& id) {
-    tableIds.erase(getTableSchema(id).getTableName());
-    tableSchemas.erase(id);
-    tableFilenames.erase(id);
-  }
+      /**
+       * CREATE TABLE
+       */
+      TableId addTableSchema(const TableSchema &tableSchema,
+          const string &tableFilename) {
+        tableIds.insert(pair<string, TableId>(tableSchema.getTableName(), nextTableId));
+        tableSchemas.insert(pair<TableId, TableSchema>(nextTableId, tableSchema));
+        tableFilenames.insert(pair<TableId, string>(nextTableId, tableFilename));
+        return nextTableId++;
+      }
 
-  /**
-   * ALTER TABLE
-   */
-  void setTableSchema(const TableId& id, const TableSchema& tableSchema) {
-    tableSchemas.at(id) = tableSchema;
-  }
-};
+      /**
+       * DROP TABLE
+       */
+      void deleteTableSchema(const TableId &id) {
+        tableIds.erase(getTableSchema(id).getTableName());
+        tableSchemas.erase(id);
+        tableFilenames.erase(id);
+      }
 
-}  // namespace badgerdb
+      /**
+       * ALTER TABLE
+       */
+      void setTableSchema(const TableId &id, const TableSchema &tableSchema) {
+        tableSchemas.at(id) = tableSchema;
+      }
+  };
+
+} // namespace badgerdb

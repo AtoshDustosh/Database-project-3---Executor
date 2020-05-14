@@ -10,38 +10,39 @@
 #include <string>
 
 #include "badgerdb_exception.h"
-#include "types.h"
+#include "../types.h"
 
 namespace badgerdb {
 
-/**
- * @brief An exception that is thrown when a page which is not expected to be pinned in the buffer pool is found to be pinned.
- */
-class PagePinnedException : public BadgerDbException {
- public:
   /**
-   * Constructs a page pinned exception for the given file.
+   * @brief An exception that is thrown when a page which is not expected to be pinned in the buffer pool is found to be pinned.
    */
-  explicit PagePinnedException(const std::string& nameIn, PageId pageNoIn, FrameId frameNoIn);
+  class PagePinnedException: public BadgerDbException {
+    public:
+      /**
+       * Constructs a page pinned exception for the given file.
+       */
+      explicit PagePinnedException(const std::string &nameIn, PageId pageNoIn,
+          FrameId frameNoIn);
 
- protected:
-  /**
-   * Name of file that caused this exception.
-   */
-  const std::string& name;
+    protected:
+      /**
+       * Name of file that caused this exception.
+       */
+      const std::string &name;
 
-  /**
-   * Page number in file
-   */
-  const PageId pageNo;
+      /**
+       * Page number in file
+       */
+      const PageId pageNo;
 
-  /**
-   * Frame number in buffer pool
-   */
-  const FrameId frameNo;
-  /**
-   * Name of file that caused this exception.
-   */
-};
+      /**
+       * Frame number in buffer pool
+       */
+      const FrameId frameNo;
+      /**
+       * Name of file that caused this exception.
+       */
+  };
 
 }

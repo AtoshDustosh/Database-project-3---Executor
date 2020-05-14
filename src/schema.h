@@ -14,210 +14,225 @@ using namespace std;
 
 namespace badgerdb {
 
-/**
- * Data type definitions: INT, CHAR(n), VARCHAR(n)
- */
-enum DataType { INT, CHAR, VARCHAR };
-
-/**
- * Attribute definition
- */
-class Attribute {
- public:
   /**
-   * Attribute name
+   * Data type definitions: INT, CHAR(n), VARCHAR(n)
    */
-  string attrName;
+  enum DataType {
+    INT, CHAR, VARCHAR
+  };
 
   /**
-   * Attribute type
+   * Attribute definition
    */
-  DataType attrType;
+  class Attribute {
+    public:
+      /**
+       * Attribute name
+       */
+      string attrName;
+
+      /**
+       * Attribute type
+       */
+      DataType attrType;
+
+      /**
+       * The max size of the attribute
+       * If the attribute is CHAR(5), maxSize = 5.
+       * If the attribute is INT or other non-array type, maxSize = 0;
+       */
+      int maxSize;
+
+      /**
+       * Is the attribute not allowed to be null?
+       */
+      bool isNotNull;
+
+      /**
+       * Is the attribute required to be unique?
+       */
+      bool isUnique;
+
+      /**
+       * Constructor
+       */
+      Attribute(const string &attrName, const DataType &attrType, int maxSize,
+          bool isNotNull = false, bool isUnique = false) :
+          attrName(attrName), attrType(attrType), maxSize(maxSize), isNotNull(
+              false), isUnique(false) {
+        // nothing
+      }
+
+      /**
+       * Destructor
+       */
+      ~Attribute() {
+        // nothing
+      }
+  };
 
   /**
-   * The max size of the attribute
-   * If the attribute is CHAR(5), maxSize = 5
+   * Schema of Tables
    */
-  int maxSize;
+  class TableSchema {
+    private:
+      /**
+       * Table name
+       */
+      string tableName;
 
-  /**
-   * Is the attribute not allowed to be null?
-   */
-  bool isNotNull;
+      /**
+       * Attribute list
+       */
+      vector<Attribute> attrs;
 
-  /**
-   * Is the attribute required to be unique?
-   */
-  bool isUnique;
+      /**
+       * Is temporary table?
+       */
+      bool isTemp;
 
-  /**
-   * Constructor
-   */
-  Attribute(const string& attrName,
-            const DataType& attrType,
-            int maxSize,
-            bool isNotNull = false,
-            bool isUnique = false)
-      : attrName(attrName),
-        attrType(attrType),
-        maxSize(maxSize),
-        isNotNull(false),
-        isUnique(false) {
-    // nothing
-  }
+    public:
+      /**
+       * Constructor
+       */
+      TableSchema(const string &tableName, bool isTemp = false) :
+          tableName(tableName), isTemp(isTemp) {
+        // nothing
+      }
 
-  /**
-   * Destructor
-   */
-  ~Attribute() {
-    // nothing
-  }
-};
+      /**
+       * Constructor
+       */
+      TableSchema(const string &tableName, const vector<Attribute> &attrs,
+          bool isTemp = false) :
+          tableName(tableName), attrs(attrs), isTemp(isTemp) {
+        // nothing
+      }
 
-/**
- * Schema of Tables
- */
-class TableSchema {
- private:
-  /**
-   * Table name
-   */
-  string tableName;
+      /**
+       * Copy constructor
+       */
+      TableSchema(const TableSchema &tableSchema) :
+          tableName(tableSchema.tableName), attrs(tableSchema.attrs), isTemp(
+              tableSchema.isTemp) {
+        // nothing
+      }
 
-  /**
-   * Attribute list
-   */
-  vector<Attribute> attrs;
+      /**
+       * Destructor
+       */
+      ~TableSchema() {
+        // nothing
+      }
 
-  /**
-   * Is temporary table?
-   */
-  bool isTemp;
+      /**
+       * Create table schema from an SQL statement
+       */
+      static TableSchema fromSQLStatement(const string &sql);
 
- public:
-  /**
-   * Constructor
-   */
-  TableSchema(const string& tableName, bool isTemp = false)
-      : tableName(tableName), isTemp(isTemp) {
-    // nothing
-  }
+      /**
+       * Is the table temporary?
+       */
+      bool isTempTable() const {
+        return isTemp;
+      }
 
-  /**
-   * Constructor
-   */
-  TableSchema(const string& tableName,
-              const vector<Attribute>& attrs,
-              bool isTemp = false)
-      : tableName(tableName), attrs(attrs), isTemp(isTemp) {
-    // nothing
-  }
+      /**
+       * Get table name
+       */
+      const string& getTableName() const {
+        return tableName;
+      }
 
-  /**
-   * Copy constructor
-   */
-  TableSchema(const TableSchema& tableSchema)
-      : tableName(tableSchema.tableName),
-        attrs(tableSchema.attrs),
-        isTemp(tableSchema.isTemp) {
-    // nothing
-  }
+      /**
+       * Get the number of attributes
+       */
+      int getAttrCount() const {
+        return attrs.size();
+      }
 
-  /**
-   * Destructor
-   */
-  ~TableSchema() {
-    // nothing
-  }
+      /**
+       * Get the name of the num-th attribute
+       */
+      const string& getAttrName(int num) const {
+        return attrs[num].attrName;
+      }
 
-  /**
-   * Create table schema from an SQL statement
-   */
-  static TableSchema fromSQLStatement(const string& sql);
+      /**
+       * Get the type of the num-th attribute
+       */
+      const DataType& getAttrType(int num) const {
+        return attrs[num].attrType;
+      }
 
-  /**
-   * Is the table temporary?
-   */
-  bool isTempTable() const { return isTemp; }
+      /**
+       * Get the max size of the num-th attribute
+       */
+      int getAttrMaxSize(int num) const {
+        return attrs[num].maxSize;
+      }
 
-  /**
-   * Get table name
-   */
-  const string& getTableName() const { return tableName; }
+      /**
+       * Is the num-th attribute not allowed to be null?
+       */
+      bool isAttrNotNull(int num) const {
+        return attrs[num].isNotNull;
+      }
 
-  /**
-   * Get the number of attributes
-   */
-  int getAttrCount() const { return attrs.size(); }
+      /**
+       * Is the num-th attribute required to be unique?
+       */
+      bool isAttrUnique(int num) const {
+        return attrs[num].isUnique;
+      }
 
-  /**
-   * Get the name of the num-th attribute
-   */
-  const string& getAttrName(int num) const { return attrs[num].attrName; }
+      /**
+       * Set the type of the num-th attribute
+       */
+      void setAttrType(int num, const DataType &type) {
+        attrs[num].attrType = type;
+      }
 
-  /**
-   * Get the type of the num-th attribute
-   */
-  const DataType& getAttrType(int num) const { return attrs[num].attrType; }
+      /**
+       * Get the number of attribute by its name
+       */
+      int getAttrNum(const string &attrName) const {
+        for (int i = 0; i < getAttrCount(); i++) {
+          if (attrs[i].attrName == attrName)
+            return i;
+        }
+        return -1;
+      }
 
-  /**
-   * Get the max size of the num-th attribute
-   */
-  int getAttrMaxSize(int num) const { return attrs[num].maxSize; }
+      /**
+       * Does the table contains the attribute?
+       */
+      bool hasAttr(const string &attrName) const {
+        for (auto it = attrs.begin(); it != attrs.end(); ++it) {
+          if (it->attrName == attrName)
+            return true;
+        }
+        return false;
+      }
 
-  /**
-   * Is the num-th attribute not allowed to be null?
-   */
-  bool isAttrNotNull(int num) const { return attrs[num].isNotNull; }
+      /**
+       * Add an attribute to the table
+       */
+      void addAttr(const Attribute &attr) {
+        attrs.push_back(attr);
+      }
 
-  /**
-   * Is the num-th attribute required to be unique?
-   */
-  bool isAttrUnique(int num) const { return attrs[num].isUnique; }
+      /**
+       * Delete the num-th attribute
+       */
+      void deleteAttr(int num) {
+        attrs.erase(attrs.begin() + num);
+      }
 
-  /**
-   * Set the type of the num-th attribute
-   */
-  void setAttrType(int num, const DataType& type) {
-    attrs[num].attrType = type;
-  }
+      /**
+       * Print the schema
+       */
+      void print() const;
+  };
 
-  /**
-   * Get the number of attribute by its name
-   */
-  int getAttrNum(const string& attrName) const {
-    for (int i = 0; i < getAttrCount(); i++) {
-      if (attrs[i].attrName == attrName)
-        return i;
-    }
-    return -1;
-  }
-
-  /**
-   * Does the table contains the attribute?
-   */
-  bool hasAttr(const string& attrName) const {
-    for (auto it = attrs.begin(); it != attrs.end(); ++it) {
-      if (it->attrName == attrName)
-        return true;
-    }
-    return false;
-  }
-
-  /**
-   * Add an attribute to the table
-   */
-  void addAttr(const Attribute& attr) { attrs.push_back(attr); }
-
-  /**
-   * Delete the num-th attribute
-   */
-  void deleteAttr(int num) { attrs.erase(attrs.begin() + num); }
-
-  /**
-   * Print the schema
-   */
-  void print() const;
-};
-
-}  // namespace badgerdb
+} // namespace badgerdb

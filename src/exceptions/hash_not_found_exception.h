@@ -10,30 +10,31 @@
 #include <string>
 
 #include "badgerdb_exception.h"
-#include "types.h"
+#include "../types.h"
 
 namespace badgerdb {
 
-/**
- * @brief An exception that is thrown when an entry being looked up in the hash table is not present in it.
- */
-class HashNotFoundException : public BadgerDbException {
- public:
   /**
-   * Constructs a hash not found exception for the given file.
+   * @brief An exception that is thrown when an entry being looked up in the hash table is not present in it.
    */
-  explicit HashNotFoundException(const std::string& nameIn, PageId pageNoIn);
+  class HashNotFoundException: public BadgerDbException {
+    public:
+      /**
+       * Constructs a hash not found exception for the given file.
+       */
+      explicit HashNotFoundException(const std::string &nameIn,
+          PageId pageNoIn);
 
- protected:
-  /**
-   * Name of file that caused this exception.
-   */
-  const std::string& name;
+    protected:
+      /**
+       * Name of file that caused this exception.
+       */
+      const std::string &name;
 
-  /**
-   * Page number in file
-   */
-  const PageId pageNo;
-};
+      /**
+       * Page number in file
+       */
+      const PageId pageNo;
+  };
 
 }

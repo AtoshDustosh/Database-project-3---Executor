@@ -15,25 +15,25 @@ using namespace std;
 
 namespace badgerdb {
 
-/**
- * Heap file manager for inserting and deleting tuples
- */
-class HeapFileManager {
- public:
   /**
-   * Insert a tuple to a table
+   * Heap file manager for inserting and deleting tuples
    */
-  static RecordId insertTuple(const string& tuple, File& file, BufMgr* bufMgr);
+  class HeapFileManager {
+    public:
+      /**
+       * Insert a tuple to a table
+       */
+      static RecordId insertTuple(const string &tuple, File &file, BufMgr *bufMgr);
 
-  /**
-   * Delete a tuple from a table
-   */
-  static void deleteTuple(const RecordId& rid, File& file, BufMgr* bugMgr);
+      /**
+       * Delete a tuple from a table
+       */
+      static void deleteTuple(const RecordId &rid, File &file, BufMgr *bufMgr);
 
-  /**
-   * Create a tuple from an SQL statement
-   */
-  static string createTupleFromSQLStatement(const string& sql,
-                                            const Catalog* catalog);
-};
-}  // namespace badgerdb
+      /**
+       * Create a tuple from an SQL statement
+       */
+      static string createTupleFromSQLStatement(const string &sql,
+          const Catalog *catalog);
+  };
+} // namespace badgerdb
