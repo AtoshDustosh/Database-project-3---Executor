@@ -181,8 +181,8 @@ namespace badgerdb {
       PageIterator itPage = page.begin();
       while (itPage != page.end()) {
         string record = *(itPage);
-//        std::cout << "record(pageNo: " << page.page_number() << ") - '" << record
-//            << "'\n";
+        std::cout << "record(pageNo: " << page.page_number() << ") - '" << record
+            << "'\n";
         vector<string> attrs = split(record, "\t");
         string key = "";
         for (unsigned int i = 0; i < joinAttrsIDLeft.size(); i++) {
@@ -292,7 +292,7 @@ namespace badgerdb {
     this->numIOs = 0;
 
     // size of a block when executing nested-loop join
-    const int blockSize = 50;
+    const int blockSize = numAvailableBufPages;
 
     // result output
     File *resultFilePointer = &resultFile;
@@ -306,7 +306,7 @@ namespace badgerdb {
     vector<int> joinAttrsIDResult;
     map<string, vector<string>> bufferMap;
 
-    // left table - 500; right table - 100
+    // left table; right table
     File *leftFile = &(this->leftTableFile);
     File *rightFile = &(this->rightTableFile);
     FileIterator itRightFile = rightFile->begin();
@@ -372,12 +372,13 @@ namespace badgerdb {
         }
         blockUsedCount++;
         if ((blockUsedCount % blockSize == 0 && blockUsedCount != 0) == false) {
+          // read only bolckSize Count
           itLeftPage++;
           continue;
         } else {
           // do nothing
           this->numIOs++;
-          std::cout << "block used count: " << blockUsedCount << endl;
+//          std::cout << "block used count: " << blockUsedCount << endl;
         }
         // probe stage
         itRightFile = rightFile->begin();
